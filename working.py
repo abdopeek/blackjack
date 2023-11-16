@@ -17,6 +17,12 @@ class Dealer(object):
         self.hand = []
         self.score = 0
 
+    def hit_or_stick(self):
+        if self.score < 17:
+            return True
+        else:
+            return False
+
 
 class Player(Dealer):
     def __init__(self, name, funds=100, bet=10):
