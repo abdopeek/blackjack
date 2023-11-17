@@ -135,6 +135,7 @@ class Table:
             if again.lower().startswith('y'):
                 self.new_game()
             elif again.lower().startswith('n'):
+                file.close()
                 exit(1)
         else:
             print("You're all out of money! Get it up and come back :(")
