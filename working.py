@@ -28,11 +28,17 @@ class Table:
         self.player = Player(player)
         self.deck = Deck()
 
+        self.setup_game()
+        self.main()
 
     def new_game(self):
-        self.dealer.hand = self.player.hand = []
+        self.dealer = Dealer()
+        self.player.score = 0
+        self.player.hand = []
         self.deck = Deck()
 
+        self.setup_game()
+        self.main()
 
     def setup_game(self):
         file.write('winner,dealer_hand,player_hand\n')
@@ -97,16 +103,17 @@ class Table:
             print(self)
             print(f"{player.name} busts")
             try:
-                self.player.payout()
+                player.payout(False)
                 file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
             except:
+                self.player.payout(True)
                 file.write(f'{self.dealer.name},{self.dealer.hand},{self.player.hand}\n')
             self.end_game()
         elif score == 21:
             print(self)
             print(f"{player.name} blackjack")
             try:
-                player.payout()
+                player.payout(True)
                 file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
             except:
                 file.write(f'{self.dealer.name},{self.dealer.hand},{self.player.hand}\n')
@@ -125,7 +132,7 @@ class Table:
         else:
             print(f"You win!")
             file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
-            self.player.payout()
+            self.player.payout(True)
             self.end_game()
 
     def end_game(self):
@@ -135,7 +142,6 @@ class Table:
             if again.lower().startswith('y'):
                 self.new_game()
             elif again.lower().startswith('n'):
-                file.close()
                 exit(1)
         else:
             print("You're all out of money! Get it up and come back :(")
@@ -187,8 +193,11 @@ class Player(Dealer):
                 print("Invalid input, (Y/N): ")
                 continue
 
-    def payout(self):
-        self.funds += self.bet * 2
+    def payout(self, win):
+        if win:
+            self.funds += self.bet + (self.bet * 2)
+        else:
+            pass
 
     @staticmethod
     def hit_or_stick():
@@ -203,11 +212,5 @@ class Player(Dealer):
                 continue
 
 
-def main():
-    name = input("Hello, whats your name: ")
-    table = Table(name)
-    table.setup_game()
-    table.main()
-
-if __name__ == '__project__':
-    main()
+name = 'tom'
+table = Table(name)
