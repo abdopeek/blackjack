@@ -25,11 +25,14 @@ def shuffle(ls, left=None, right=0):  # fisher-yates shuffle
 class Table:
     def __init__(self, player):
         self.dealer = Dealer()
-        self.player = Player(player)
         self.deck = Deck()
+        if type(player) == Player:
+            self.player = player
+        else:
+            self.player = Player(player)
 
+        file.write('winner,dealer_hand,player_hand\n')
         self.setup_game()
-        self.main()
 
     def new_game(self):
         self.dealer = Dealer()
@@ -41,7 +44,6 @@ class Table:
         self.main()
 
     def setup_game(self):
-        file.write('winner,dealer_hand,player_hand\n')
         self.deck.shuffle()  # shuffle cards before starting game
         self.player.place_bet()
         self.deal_card(self.player)  # deal card to player, then dealer, then player.
@@ -104,19 +106,19 @@ class Table:
             print(f"{player.name} busts")
             try:
                 player.payout(False)
-                file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
+                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             except:
                 self.player.payout(True)
-                file.write(f'{self.dealer.name},{self.dealer.hand},{self.player.hand}\n')
+                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             self.end_game()
         elif score == 21:
             print(self)
             print(f"{player.name} blackjack")
             try:
                 player.payout(True)
-                file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
+                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             except:
-                file.write(f'{self.dealer.name},{self.dealer.hand},{self.player.hand}\n')
+                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             self.end_game()
         else:
             return
@@ -127,11 +129,11 @@ class Table:
 
         if dealer_score > player_score:
             print("Dealer wins!")
-            file.write(f'{self.dealer.name},{self.dealer.hand},{self.player.hand}\n')
+            file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             self.end_game()
         else:
             print(f"You win!")
-            file.write(f'{self.player.name},{self.dealer.hand},{self.player.hand}\n')
+            file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
             self.player.payout(True)
             self.end_game()
 
@@ -183,6 +185,9 @@ class Player(Dealer):
                 bet = input("Enter your new bet: ")
                 try:
                     bet = float(bet)
+                    if bet > self.funds:
+                        print("You don't have that much funds!")
+                        continue
                     self.bet = bet
                     self.funds -= self.bet
                     return
