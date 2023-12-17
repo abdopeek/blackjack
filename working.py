@@ -26,10 +26,7 @@ class Table:
     def __init__(self, player):
         self.dealer = Dealer()
         self.deck = Deck()
-        if type(player) == Player:
-            self.player = player
-        else:
-            self.player = Player(player)
+        self.player = Player(player)
 
         file.write('winner,dealer_hand,player_hand\n')
         self.setup_game()
