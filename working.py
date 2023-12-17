@@ -22,11 +22,21 @@ def shuffle(ls, left=None, right=0):  # fisher-yates shuffle
     return shuffle(ls, left, right+1)
 
 
+def get_cards(hand):
+    res = []
+    for card, val in hand:
+        res.append(card)
+    return res
+
+
 class Table:
     def __init__(self, player):
         self.dealer = Dealer()
         self.deck = Deck()
-        self.player = Player(player)
+        if type(player) == Player:
+            self.player = player
+        else:
+            self.player = Player(player)
 
         file.write('winner,dealer_hand,player_hand\n')
         self.setup_game()
@@ -103,19 +113,27 @@ class Table:
             print(f"{player.name} busts")
             try:
                 player.payout(False)
-                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+                dealer_cards = get_cards(self.dealer.hand)
+                player_cards = get_cards(self.player.hand)
+                file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             except:
                 self.player.payout(True)
-                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+                dealer_cards = get_cards(self.dealer.hand)
+                player_cards = get_cards(self.player.hand)
+                file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             self.end_game()
         elif score == 21:
             print(self)
             print(f"{player.name} blackjack")
             try:
                 player.payout(True)
-                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+                dealer_cards = get_cards(self.dealer.hand)
+                player_cards = get_cards(self.player.hand)
+                file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             except:
-                file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+                dealer_cards = get_cards(self.dealer.hand)
+                player_cards = get_cards(self.player.hand)
+                file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             self.end_game()
         else:
             return
@@ -126,11 +144,15 @@ class Table:
 
         if dealer_score > player_score:
             print("Dealer wins!")
-            file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+            dealer_cards = get_cards(self.dealer.hand)
+            player_cards = get_cards(self.player.hand)
+            file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             self.end_game()
         else:
             print(f"You win!")
-            file.write(f'{self.player.name},"{self.dealer.hand}","{self.player.hand}"\n')
+            dealer_cards = get_cards(self.dealer.hand)
+            player_cards = get_cards(self.player.hand)
+            file.write(f'{self.player.name},"{dealer_cards}","{player_cards}"\n')
             self.player.payout(True)
             self.end_game()
 
